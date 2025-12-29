@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* Solana Aesthetic Theme */
+@theme {
+  /* Colors - Solana inspired palette */
+  --color-solana-purple: #9945FF;
+  --color-solana-teal: #14F195;
+  --color-solana-blue: #00D1FF;
+  --color-dark-900: #0a0a0f;
+  --color-dark-800: #12121a;
+  --color-dark-700: #1a1a25;
+  --color-dark-600: #252532;
+  --color-dark-500: #32324a;
+  
+  /* Gradients */
+  --color-gradient-start: #9945FF;
+  --color-gradient-mid: #14F195;
+  --color-gradient-end: #00D1FF;
+  
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-dark-900 text-white antialiased;
+  font-family: var(--font-sans);
+  margin: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(90deg, var(--color-solana-purple), var(--color-solana-teal));
+}
+
+/* Glow effects */
+.glow-purple {
+  box-shadow: 0 0 20px rgba(153, 69, 255, 0.3);
+}
+
+.glow-teal {
+  box-shadow: 0 0 20px rgba(20, 241, 149, 0.3);
+}
+
+/* Animation utilities */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(153, 69, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(153, 69, 255, 0.6);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glass morphism */
+.glass {
+  @apply bg-dark-800/60 backdrop-blur-xl border border-dark-600/50;
+}
+
+/* Button base styles */
+.btn-primary {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+  @apply bg-gradient-to-r from-solana-purple to-solana-teal;
+  @apply hover:opacity-90 hover:scale-105;
+  @apply active:scale-95;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+  @apply bg-dark-700 border border-dark-500;
+  @apply hover:border-solana-purple hover:bg-dark-600;
+  @apply active:scale-95;
+}
+
+/* Card styles */
+.card {
+  @apply bg-dark-800 border border-dark-600 rounded-2xl p-6;
+  @apply transition-all duration-300;
+  @apply hover:border-solana-purple/50 hover:shadow-lg hover:shadow-solana-purple/10;
+}
+
+/* Code block styling */
+.code-block {
+  @apply bg-dark-900 border border-dark-600 rounded-xl p-4;
+  @apply font-mono text-sm overflow-x-auto;
+}
+
