@@ -30,7 +30,7 @@ interface Tutorial {
 const tutorials: Tutorial[] = [
   {
     id: 'passkey-wallet-setup',
-    title: 'From Seed Phrases to FaceID',
+    title: 'From Seed Phrases to Biometrics',
     description: 'Understand why passkeys are the future and set up your first LazorKit wallet with biometrics',
     difficulty: 'Beginner',
     time: '10 min',
