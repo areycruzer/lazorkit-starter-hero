@@ -7,11 +7,11 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
             <p className="text-gray-400 text-sm">
-              Built with <span className="text-solana-purple">♥</span> for{' '}
-              <span className="gradient-text font-semibold">Superteam Vietnam</span>
+              Built with <span className="text-solana-purple">♥</span> using{' '}
+              <span className="gradient-text font-semibold">LazorKit</span>
             </p>
             <p className="text-gray-500 text-xs mt-1">
-              LazorKit Starter Hero Template
+              Passkey-Native Smart Wallet Starter
             </p>
           </div>
 

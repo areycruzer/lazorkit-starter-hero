@@ -330,6 +330,3 @@ Now that you've created your first LazorKit wallet, you're ready to:
 
 Welcome to the passkey-powered future of Solana! 🚀
 
----
-
-*Built with ❤️ for the Superteam Vietnam LazorKit Bounty*

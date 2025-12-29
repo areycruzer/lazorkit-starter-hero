@@ -312,10 +312,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **[LazorKit](https://lazorkit.com)** - For the amazing passkey wallet SDK
 - **[Solana](https://solana.com)** - For the blazing fast blockchain
-- **[Superteam Vietnam](https://superteam.vn)** - For the bounty opportunity
 
 ---
 
 <p align="center">
-  Built with ❤️ for the <strong>Superteam Vietnam LazorKit Bounty</strong>
+  Built with ❤️ by <strong>areycruzer</strong>
 </p>

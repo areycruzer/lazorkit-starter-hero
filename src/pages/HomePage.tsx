@@ -55,7 +55,7 @@ export function HomePage() {
         <div className="text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-dark-700 border border-dark-500 mb-8">
             <Sparkles className="w-4 h-4 text-solana-teal" />
-            <span className="text-sm text-gray-300">Superteam Vietnam Bounty Winner Template</span>
+            <span className="text-sm text-gray-300">Production-Ready Solana Starter Template</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">

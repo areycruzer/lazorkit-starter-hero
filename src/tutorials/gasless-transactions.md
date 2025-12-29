@@ -642,6 +642,3 @@ You've learned how gasless transactions work! Continue your journey:
 
 Build the fintech-grade UX your users deserve! 🚀
 
----
-
-*Built with ❤️ for the Superteam Vietnam LazorKit Bounty*
