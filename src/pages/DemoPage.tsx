@@ -100,6 +100,17 @@ export function DemoPage() {
       return;
     }
 
+    const amount = parseFloat(amountInput);
+    if (isNaN(amount) || amount <= 0) {
+      addLog('error', 'Invalid amount');
+      return;
+    }
+
+    if (amount > 2) {
+      addLog('error', 'Amount exceeds maximum limit of 2 SOL');
+      return;
+    }
+
     try {
       setLoadingAction('tx');
 
@@ -117,7 +128,7 @@ export function DemoPage() {
       const instruction = SystemProgram.transfer({
         fromPubkey: smartWalletPubkey,
         toPubkey: recipientKey,
-        lamports: Math.floor(parseFloat(amountInput) * LAMPORTS_PER_SOL),
+        lamports: Math.floor(amount * LAMPORTS_PER_SOL),
       });
 
       addLog('info', 'Requesting wallet signature...');
@@ -293,14 +304,19 @@ export function DemoPage() {
 
             <div className="bg-dark-900/50 rounded-xl p-4 mb-6 border border-white/5 space-y-4">
               <div>
-                <label className="text-xs text-gray-500 font-mono mb-1 block">Amount (SOL)</label>
+                <label className="text-xs text-gray-500 font-mono mb-1 block">Amount (SOL) <span className="text-gray-600">• Max 2 SOL</span></label>
                 <input
                   type="number"
                   value={amountInput}
                   onChange={(e) => setAmountInput(e.target.value)}
                   step="0.001"
+                  min="0.001"
+                  max="2"
                   className="w-full bg-transparent border-none text-gray-300 font-mono text-sm focus:ring-0 p-0"
                 />
+                {parseFloat(amountInput) > 2 && (
+                  <p className="text-red-400 text-xs mt-1">Maximum 2 SOL per transaction</p>
+                )}
               </div>
               <div className="pt-2 border-t border-white/5">
                 <label className="text-xs text-gray-500 font-mono mb-1 block">Recipient</label>
@@ -311,6 +327,7 @@ export function DemoPage() {
                     value={recipientInput}
                     onChange={(e) => setRecipientInput(e.target.value)}
                     placeholder={isConnected ? "Self (Leave empty)" : "Connect Wallet"}
+                    maxLength={44}
                     className="w-full bg-transparent border-none text-gray-300 font-mono text-xs focus:ring-0 p-0 placeholder:text-gray-600"
                   />
                 </div>
