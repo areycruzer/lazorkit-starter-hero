@@ -1,16 +1,19 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
-import { 
-  BookOpen, 
-  Code, 
-  Wallet, 
+import {
+  BookOpen,
+  Code,
+  Wallet,
   ArrowRight,
   Clock,
   Zap,
   Shield,
   Send,
   Fingerprint,
-  Sparkles
+  Sparkles,
+  Copy,
+  CheckCircle
 } from 'lucide-react';
 
 interface Tutorial {
@@ -88,6 +91,38 @@ const difficultyColors: Record<string, string> = {
   Intermediate: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   Advanced: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
+
+// Code Block Component with Copy
+function CodeBlock({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative group">
+      <div className="code-block overflow-hidden">
+        <pre className="text-sm text-gray-300">
+          <code>{code}</code>
+        </pre>
+      </div>
+      <button
+        onClick={handleCopy}
+        className="absolute top-2 right-2 p-2 rounded-lg bg-dark-700/50 text-gray-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-dark-600 hover:text-white"
+        title="Copy code"
+      >
+        {copied ? (
+          <CheckCircle className="w-4 h-4 text-solana-teal" />
+        ) : (
+          <Copy className="w-4 h-4" />
+        )}
+      </button>
+    </div>
+  );
+}
 
 export function TutorialsPage() {
   const featuredTutorials = tutorials.filter(t => t.featured);
@@ -214,16 +249,15 @@ export function TutorialsPage() {
       {/* Quick Reference */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold mb-8">Quick Reference</h2>
-        
+
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="card">
             <div className="flex items-center gap-3 mb-4">
               <Code className="w-6 h-6 text-solana-purple" />
               <h3 className="text-lg font-semibold">Provider Setup</h3>
             </div>
-            <div className="code-block">
-              <pre className="text-sm">
-                <code>{`import { LazorkitProvider } from '@lazorkit/wallet';
+            <CodeBlock
+              code={`import { LazorkitProvider } from '@lazorkit/wallet';
 
 function App() {
   return (
@@ -237,9 +271,8 @@ function App() {
       <YourApp />
     </LazorkitProvider>
   );
-}`}</code>
-              </pre>
-            </div>
+}`}
+            />
           </div>
 
           <div className="card">
@@ -247,9 +280,8 @@ function App() {
               <Code className="w-6 h-6 text-solana-teal" />
               <h3 className="text-lg font-semibold">useWallet Hook</h3>
             </div>
-            <div className="code-block">
-              <pre className="text-sm">
-                <code>{`import { useWallet } from '@lazorkit/wallet';
+            <CodeBlock
+              code={`import { useWallet } from '@lazorkit/wallet';
 
 function WalletComponent() {
   const {
@@ -262,9 +294,8 @@ function WalletComponent() {
   } = useWallet();
   
   // Your wallet logic here
-}`}</code>
-              </pre>
-            </div>
+}`}
+            />
           </div>
         </div>
       </div>

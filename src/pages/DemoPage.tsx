@@ -2,11 +2,11 @@ import { useState, useCallback } from 'react';
 import { useWallet } from '@lazorkit/wallet';
 import { WalletCard } from '../components';
 import { useSignMessage } from '../hooks';
-import { 
-  Send, 
-  PenTool, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Send,
+  PenTool,
+  CheckCircle,
+  AlertCircle,
   Loader2,
   Copy,
   ExternalLink,
@@ -27,12 +27,12 @@ interface DebugLogEntry {
 }
 
 // Debug Console Component
-function DebugConsole({ 
-  logs, 
+function DebugConsole({
+  logs,
   onClear,
   isExpanded,
-  onToggleExpand 
-}: { 
+  onToggleExpand
+}: {
   logs: DebugLogEntry[];
   onClear: () => void;
   isExpanded: boolean;
@@ -70,7 +70,7 @@ function DebugConsole({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
       {/* Header Bar - Always Visible */}
-      <div 
+      <div
         className="bg-dark-800 border-t border-dark-600 cursor-pointer"
         onClick={onToggleExpand}
       >
@@ -119,7 +119,7 @@ function DebugConsole({
             ) : (
               <div className="space-y-3">
                 {logs.map((log) => (
-                  <div 
+                  <div
                     key={log.id}
                     className="bg-dark-800 rounded-lg border border-dark-600 overflow-hidden"
                   >
@@ -166,19 +166,23 @@ function DebugConsole({
 export function DemoPage() {
   const { isConnected, connect, isConnecting, smartWalletPubkey } = useWallet();
   const { sign, isSigning, lastSignature, error: signError } = useSignMessage();
-  
+
   const [messageToSign, setMessageToSign] = useState('Hello from LazorKit Starter!');
   const [copied, setCopied] = useState(false);
-  
+
   // Debug Console State
   const [debugLogs, setDebugLogs] = useState<DebugLogEntry[]>([]);
   const [consoleExpanded, setConsoleExpanded] = useState(true);
+  const [debugMode, setDebugMode] = useState(false);
 
   // Generate unique ID for logs
   const generateLogId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   // Add log entry
   const addLog = useCallback((type: DebugLogEntry['type'], title: string, data: unknown) => {
+    if (!debugMode) return; // Only log if debug mode is on (or maybe always log but only show if on? Text says "When turned on, it shows...")
+    // Actually, good practice to always log but only show if debugMode is true, BUT for clarity let's just log always and hide the component if !debugMode
+
     const entry: DebugLogEntry = {
       id: generateLogId(),
       timestamp: new Date(),
@@ -187,7 +191,7 @@ export function DemoPage() {
       data
     };
     setDebugLogs(prev => [...prev, entry]);
-  }, []);
+  }, [debugMode]);
 
   // Clear logs
   const clearLogs = () => setDebugLogs([]);
@@ -206,7 +210,7 @@ export function DemoPage() {
 
     try {
       const result = await sign(messageToSign);
-      
+
       if (result) {
         // Log successful response with full signature data
         addLog('success', 'Signature Created', {
@@ -287,44 +291,69 @@ export function DemoPage() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-48">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            <span className="gradient-text">Interactive</span> Demo
-          </h1>
-          <p className="text-gray-400">
-            Test LazorKit features with your connected passkey wallet. 
-            <span className="text-solana-teal ml-1">Debug Console below shows real blockchain data!</span>
-          </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div>
+            <h1 className="text-4xl font-bold mb-4">
+              <span className="gradient-text">Interactive</span> Demo
+            </h1>
+            <p className="text-gray-400">
+              Test LazorKit features with your connected passkey wallet.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 bg-dark-800 p-2 rounded-xl border border-dark-600">
+            <span className={`text-sm font-medium ${debugMode ? 'text-white' : 'text-gray-500'}`}>
+              Debug Mode
+            </span>
+            <button
+              onClick={() => setDebugMode(!debugMode)}
+              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${debugMode ? 'bg-solana-teal' : 'bg-dark-600'
+                }`}
+            >
+              <div
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${debugMode ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Wallet Info */}
           <div className="lg:col-span-1">
             <WalletCard />
-            
+
             {/* Debug Console Hint */}
-            <div className="mt-4 bg-gradient-to-br from-solana-purple/10 to-solana-teal/10 border border-solana-purple/30 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Terminal className="w-5 h-5 text-solana-teal" />
-                <span className="font-semibold text-white">Debug Console</span>
+            {debugMode && (
+              <div className="mt-4 bg-gradient-to-br from-solana-purple/10 to-solana-teal/10 border border-solana-purple/30 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Terminal className="w-5 h-5 text-solana-teal" />
+                  <span className="font-semibold text-white">Debug Console</span>
+                </div>
+                <p className="text-sm text-gray-400">
+                  Check the console at the bottom of the screen to see real JSON data from blockchain interactions.
+                </p>
               </div>
-              <p className="text-sm text-gray-400">
-                Check the console at the bottom of the screen to see real JSON data from blockchain interactions.
-              </p>
-            </div>
+            )}
           </div>
 
           {/* Demo Actions */}
           <div className="lg:col-span-2 space-y-8">
             {/* Sign Message */}
             <div className="card">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple to-solana-blue flex items-center justify-center">
-                  <PenTool className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple to-solana-blue flex items-center justify-center">
+                    <PenTool className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Sign Message</h3>
+                    <p className="text-sm text-gray-400">Cryptographically sign a message</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold">Sign Message</h3>
-                  <p className="text-sm text-gray-400">Cryptographically sign a message with your passkey</p>
+                <div className="px-3 py-1 rounded-lg bg-solana-teal/10 border border-solana-teal/20 text-xs font-medium text-solana-teal flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-solana-teal animate-pulse" />
+                  Gasless
                 </div>
               </div>
 
@@ -371,7 +400,7 @@ export function DemoPage() {
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-semibold">Message Signed Successfully!</span>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs text-gray-500 uppercase tracking-wide">Signature (truncated)</span>
@@ -385,9 +414,11 @@ export function DemoPage() {
                       <p className="font-mono text-xs text-gray-300 break-all bg-dark-900 p-2 rounded-lg">
                         {lastSignature.signature.slice(0, 64)}...
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
-                        See Debug Console below for full signature data →
-                      </p>
+                      {debugMode && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          See Debug Console below for full signature data →
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -396,13 +427,19 @@ export function DemoPage() {
 
             {/* Transaction Demo */}
             <div className="card">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-teal to-solana-blue flex items-center justify-center">
-                  <Send className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-teal to-solana-blue flex items-center justify-center">
+                    <Send className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Send Transaction</h3>
+                    <p className="text-sm text-gray-400">Transfer SOL with gasless transactions</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold">Send Transaction</h3>
-                  <p className="text-sm text-gray-400">Transfer SOL with gasless transactions</p>
+                <div className="px-3 py-1 rounded-lg bg-solana-teal/10 border border-solana-teal/20 text-xs font-medium text-solana-teal flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-solana-teal animate-pulse" />
+                  Sponsored: $0.00
                 </div>
               </div>
 
@@ -410,7 +447,7 @@ export function DemoPage() {
                 <p className="text-gray-400 text-center">
                   Click below to see how transaction data flows through LazorKit.
                 </p>
-                
+
                 <button
                   onClick={handleDemoTransaction}
                   className="w-full btn-secondary flex items-center justify-center gap-2"
@@ -451,12 +488,15 @@ export function DemoPage() {
       </div>
 
       {/* Debug Console - Fixed at bottom */}
-      <DebugConsole 
-        logs={debugLogs}
-        onClear={clearLogs}
-        isExpanded={consoleExpanded}
-        onToggleExpand={() => setConsoleExpanded(prev => !prev)}
-      />
+      {debugMode && (
+        <DebugConsole
+          logs={debugLogs}
+          onClear={clearLogs}
+          isExpanded={consoleExpanded}
+          onToggleExpand={() => setConsoleExpanded(prev => !prev)}
+        />
+      )}
     </>
   );
 }
+

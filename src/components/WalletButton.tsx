@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useWallet } from '@lazorkit/wallet';
 import { Fingerprint, LogOut, Wallet, Loader2 } from 'lucide-react';
 
@@ -7,6 +8,8 @@ export function WalletButton() {
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
+
+  const [showWelcome, setShowWelcome] = useState(false);
 
   if (isConnecting) {
     return (
@@ -38,13 +41,76 @@ export function WalletButton() {
   }
 
   return (
-    <button
-      onClick={() => connect()}
-      className="btn-primary flex items-center gap-2 animate-pulse-glow"
-    >
-      <Fingerprint className="w-5 h-5" />
-      Continue with Passkey
-    </button>
+    <>
+      <button
+        onClick={() => setShowWelcome(true)}
+        className="btn-primary flex items-center gap-2 animate-pulse-glow"
+      >
+        <Fingerprint className="w-5 h-5" />
+        Create Account with FaceID
+      </button>
+
+      {/* Welcome Modal for Progressive Disclosure */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/80 backdrop-blur-sm">
+          <div className="bg-dark-800 border border-dark-600 rounded-2xl max-w-md w-full p-8 relative animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowWelcome(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <LogOut className="w-5 h-5 rotate-45" />
+            </button>
+
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-solana-purple to-solana-teal flex items-center justify-center shadow-lg shadow-solana-purple/20">
+                <Fingerprint className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold mb-3">Welcome to LazorKit</h2>
+              <p className="text-gray-400">
+                The easiest way to use Solana. No passwords, no seed phrases. Just you.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-4 p-4 bg-dark-700/50 rounded-xl">
+                <div className="p-2 bg-solana-teal/10 rounded-lg">
+                  <Fingerprint className="w-5 h-5 text-solana-teal" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">Biometric Security</h3>
+                  <p className="text-sm text-gray-400">Use FaceID or TouchID to secure your account</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 bg-dark-700/50 rounded-xl">
+                <div className="p-2 bg-solana-purple/10 rounded-lg">
+                  <Wallet className="w-5 h-5 text-solana-purple" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">Smart Wallet</h3>
+                  <p className="text-sm text-gray-400">Recoverable, gasless, and programmer-friendly</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowWelcome(false);
+                connect();
+              }}
+              className="btn-primary w-full mt-8 flex items-center justify-center gap-2 text-lg py-4"
+            >
+              <Fingerprint className="w-6 h-6" />
+              Continue with FaceID
+            </button>
+
+            <p className="text-center mt-4 text-xs text-gray-500">
+              Powered by LazorKit & Solana
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
