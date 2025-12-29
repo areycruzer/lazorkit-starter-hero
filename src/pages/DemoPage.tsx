@@ -9,7 +9,8 @@ import {
   Loader2,
   CheckCircle2,
   ArrowRight,
-  Wallet
+  Wallet,
+  Coins
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
@@ -151,6 +152,32 @@ export function DemoPage() {
     }
   };
 
+  const handleAirdrop = async () => {
+    if (!smartWalletPubkey) {
+      addLog('error', 'Wallet not connected');
+      return;
+    }
+
+    try {
+      setLoadingAction('airdrop');
+      addLog('info', 'Requesting 1 SOL Airdrop...', { address: smartWalletPubkey.toBase58() });
+
+      const connection = new Connection(DEVNET_ENDPOINT, 'confirmed');
+      const signature = await connection.requestAirdrop(smartWalletPubkey, 1 * LAMPORTS_PER_SOL);
+
+      addLog('info', 'Airdrop requested, confirming...');
+      await connection.confirmTransaction(signature, 'confirmed');
+
+      addLog('success', 'Airdrop successful! You received 1 SOL.');
+      triggerSuccess();
+    } catch (error: any) {
+      console.error(error);
+      addLog('error', 'Airdrop failed', { error: error.message || 'Rate limit exceeded? Try faucet.solana.com' });
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-24">
       {/* Header */}
@@ -164,20 +191,35 @@ export function DemoPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-dark-800 p-2 rounded-xl border border-dark-600">
-          <span className={`text-sm font-medium ${debugMode ? 'text-white' : 'text-gray-500'}`}>
-            Debug Mode
-          </span>
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setDebugMode(!debugMode)}
-            className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${debugMode ? 'bg-solana-green' : 'bg-dark-600'
-              }`}
+            onClick={handleAirdrop}
+            disabled={!isConnected || !!loadingAction}
+            className="flex items-center gap-2 bg-solana-blue/10 text-solana-blue border border-solana-blue/20 px-4 py-2 rounded-xl hover:bg-solana-blue/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
           >
-            <div
-              className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${debugMode ? 'translate-x-6' : 'translate-x-0'
-                }`}
-            />
+            {loadingAction === 'airdrop' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Coins className="w-4 h-4" />
+            )}
+            Get Devnet SOL
           </button>
+
+          <div className="flex items-center gap-3 bg-dark-800 p-2 rounded-xl border border-dark-600">
+            <span className={`text-sm font-medium ${debugMode ? 'text-white' : 'text-gray-500'}`}>
+              Debug Mode
+            </span>
+            <button
+              onClick={() => setDebugMode(!debugMode)}
+              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${debugMode ? 'bg-solana-green' : 'bg-dark-600'
+                }`}
+            >
+              <div
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${debugMode ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
