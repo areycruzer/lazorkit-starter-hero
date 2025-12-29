@@ -6,12 +6,30 @@ A production-ready starter template for building passkey-native Solana applicati
 [![LazorKit](https://img.shields.io/badge/LazorKit-Passkeys-14F195?style=flat)](https://lazorkit.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react)](https://react.dev)
+[![Mobile Ready](https://img.shields.io/badge/Mobile-Responsive-00D1FF?style=flat)](https://lazorkit-starter-hero.vercel.app)
 
 ---
 
 ## 🎯 Live Demo
 
 **👉 [View Live Demo](https://lazorkit-starter-hero.vercel.app)**
+
+---
+
+## 📱 Web App Features
+
+| Feature | Description |
+|---------|-------------|
+| **Mobile Responsive** | Fully optimized for phones, tablets, and desktops |
+| **PWA Ready** | Works offline with service worker support |
+| **Touch Optimized** | Large tap targets, swipe gestures, mobile-first UI |
+| **Dark Mode** | Beautiful dark theme with Solana-inspired colors |
+| **Glass Morphism** | Modern frosted glass UI effects |
+| **Smooth Animations** | Framer Motion powered transitions |
+| **Confetti Celebrations** | Visual feedback on successful actions |
+| **Debug Console** | Real-time blockchain interaction logs |
+| **Persistent State** | Session survives page refresh via localStorage |
+| **SPA Routing** | Client-side navigation with React Router |
 
 ---
 
