@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
 import { CodeWindow } from '../components/ui/CodeWindow';
+import { SNIPPETS } from '../data/snippets';
 
 const tutorialContent: Record<string, {
   title: string;
@@ -25,27 +26,7 @@ const tutorialContent: Record<string, {
       {
         heading: 'Setting Up the Provider',
         content: 'First, wrap your app with the LazorKit provider to enable wallet functionality:',
-        code: `import { LazorkitProvider } from '@lazorkit/wallet';
-
-const LAZORKIT_CONFIG = {
-  rpcUrl: 'https://api.devnet.solana.com',
-  portalUrl: 'https://portal.lazor.sh',
-  paymasterConfig: {
-    paymasterUrl: 'https://kora.devnet.lazorkit.com',
-  },
-};
-
-function App() {
-  return (
-    <LazorkitProvider
-      rpcUrl={LAZORKIT_CONFIG.rpcUrl}
-      portalUrl={LAZORKIT_CONFIG.portalUrl}
-      paymasterConfig={LAZORKIT_CONFIG.paymasterConfig}
-    >
-      <YourApp />
-    </LazorkitProvider>
-  );
-}`,
+        code: SNIPPETS.PROVIDER_SETUP,
       },
       {
         heading: 'Creating a Passkey Wallet',

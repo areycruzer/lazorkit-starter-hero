@@ -12,6 +12,7 @@ import { BentoCard } from '../components/ui/BentoCard';
 import { Badge } from '../components/ui/Badge';
 import { CodeWindow } from '../components/ui/CodeWindow';
 import { WalletButton } from '../components/WalletButton';
+import { SNIPPETS } from '../data/snippets';
 
 export function HomePage() {
   const { isConnected } = useWallet();
@@ -136,7 +137,7 @@ export function HomePage() {
               Get started with just a few lines of code.
             </p>
             <CodeWindow
-              code="const { connect } = useWallet();"
+              code={SNIPPETS.REACT_HOOK_MINIMAL}
               language="typescript"
               title="React Hook"
               className="mt-6"
@@ -156,21 +157,7 @@ export function HomePage() {
               <CodeWindow
                 title="src/App.tsx"
                 language="tsx"
-                code={`import { LazorkitProvider } from '@lazorkit/wallet';
-
-function App() {
-  return (
-    <LazorkitProvider
-      rpcUrl="https://api.devnet.solana.com"
-      portalUrl="https://portal.lazor.sh"
-      paymasterConfig={{
-        paymasterUrl: "https://kora.devnet.lazorkit.com"
-      }}
-    >
-      <YourApp />
-    </LazorkitProvider>
-  );
-}`}
+                code={SNIPPETS.PROVIDER_SETUP}
               />
             </div>
 
@@ -182,20 +169,7 @@ function App() {
               <CodeWindow
                 title="src/components/ConnectWallet.tsx"
                 language="tsx"
-                code={`import { useWallet } from '@lazorkit/wallet';
-
-function WalletComponent() {
-  const {
-    connect,
-    disconnect,
-    isConnected,
-    smartWalletPubkey,
-    signMessage,
-    signAndSendTransaction,
-  } = useWallet();
-
-  // Your wallet logic here
-}`}
+                code={SNIPPETS.USE_WALLET}
               />
             </div>
           </div>
