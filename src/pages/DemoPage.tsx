@@ -158,7 +158,10 @@ export function DemoPage() {
         <div>
           <Badge label="Interactive Demo" variant="solana" />
           <h1 className="text-4xl font-bold mt-4">Smart Wallet Playground</h1>
-          <p className="text-gray-400 mt-2">Test real transactions and signatures on Solana Devnet.</p>
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-gray-400">Test real transactions and signatures on Solana Devnet.</p>
+            <span className="text-xs font-mono text-solana-teal bg-solana-teal/10 px-2 py-0.5 rounded border border-solana-teal/20">v2.0 Live</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 bg-dark-800 p-2 rounded-xl border border-dark-600">
