@@ -10,6 +10,7 @@ import {
 import { motion } from 'framer-motion';
 import { BentoCard } from '../components/ui/BentoCard';
 import { Badge } from '../components/ui/Badge';
+import { CodeWindow } from '../components/ui/CodeWindow';
 import { WalletButton } from '../components/WalletButton';
 
 export function HomePage() {
@@ -134,13 +135,12 @@ export function HomePage() {
               Full TypeScript support, React hooks, and comprehensive documentation.
               Get started with just a few lines of code.
             </p>
-            <div className="code-block text-xs bg-black/50 backdrop-blur-md">
-              <pre>
-                <code className="text-gray-300">
-                  <span className="text-solana-purple">const</span> {'{ connect }'} = <span className="text-solana-green">useWallet</span>();
-                </code>
-              </pre>
-            </div>
+            <CodeWindow
+              code="const { connect } = useWallet();"
+              language="typescript"
+              title="React Hook"
+              className="mt-6"
+            />
           </BentoCard>
         </div>
       </section>

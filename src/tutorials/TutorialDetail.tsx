@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Copy, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
+
+import { CodeWindow } from '../components/ui/CodeWindow';
 
 const tutorialContent: Record<string, {
   title: string;
@@ -626,15 +627,7 @@ const sendTransaction = async () => {
 
 export function TutorialDetail() {
   const { tutorialId } = useParams<{ tutorialId: string }>();
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
   const tutorial = tutorialId ? tutorialContent[tutorialId] : null;
-
-  const copyCode = (code: string, index: number) => {
-    navigator.clipboard.writeText(code);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
 
   if (!tutorial) {
     return (
@@ -649,8 +642,8 @@ export function TutorialDetail() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Link 
-        to="/tutorials" 
+      <Link
+        to="/tutorials"
         className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -671,23 +664,12 @@ export function TutorialDetail() {
               {section.content}
             </p>
             {section.code && (
-              <div className="relative">
-                <button
-                  onClick={() => copyCode(section.code!, index)}
-                  className="absolute top-4 right-4 p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors"
-                >
-                  {copiedIndex === index ? (
-                    <CheckCircle className="w-4 h-4 text-solana-teal" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-gray-400" />
-                  )}
-                </button>
-                <div className="code-block">
-                  <pre className="text-sm leading-relaxed overflow-x-auto">
-                    <code>{section.code}</code>
-                  </pre>
-                </div>
-              </div>
+              <CodeWindow
+                code={section.code}
+                language="typescript"
+                title="Example"
+                className="mt-6"
+              />
             )}
           </section>
         ))}
@@ -720,8 +702,8 @@ export function TutorialDetail() {
 
       <div className="mt-8 pt-8 border-t border-dark-600">
         <div className="flex items-center justify-between">
-          <Link 
-            to="/tutorials" 
+          <Link
+            to="/tutorials"
             className="text-gray-400 hover:text-white transition-colors"
           >
             ← More Tutorials
