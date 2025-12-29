@@ -12,7 +12,7 @@ export function WalletButton() {
     return (
       <button className="btn-primary flex items-center gap-2 opacity-70 cursor-wait" disabled>
         <Loader2 className="w-5 h-5 animate-spin" />
-        Connecting...
+        Authenticating...
       </button>
     );
   }
@@ -43,7 +43,7 @@ export function WalletButton() {
       className="btn-primary flex items-center gap-2 animate-pulse-glow"
     >
       <Fingerprint className="w-5 h-5" />
-      Connect with Passkey
+      Continue with Passkey
     </button>
   );
 }

@@ -693,7 +693,32 @@ export function TutorialDetail() {
         ))}
       </div>
 
-      <div className="mt-12 pt-8 border-t border-dark-600">
+      {/* Try It Now CTA */}
+      <div className="mt-12 p-6 bg-gradient-to-br from-solana-purple/10 to-solana-teal/10 border border-solana-purple/30 rounded-2xl">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-1">Ready to try it yourself?</h3>
+            <p className="text-gray-400">See this code in action with our interactive demo</p>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              to="/demo"
+              className="btn-primary flex items-center gap-2"
+            >
+              Try Demo
+              <ArrowLeft className="w-4 h-4 rotate-180" />
+            </Link>
+            <Link
+              to="/subscription"
+              className="btn-secondary flex items-center gap-2"
+            >
+              Subscription Flow
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-dark-600">
         <div className="flex items-center justify-between">
           <Link 
             to="/tutorials" 

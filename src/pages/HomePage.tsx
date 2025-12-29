@@ -83,7 +83,7 @@ export function HomePage() {
                 className="btn-primary flex items-center gap-2 animate-pulse-glow"
               >
                 <Fingerprint className="w-5 h-5" />
-                {isConnecting ? 'Connecting...' : 'Get Started with Passkey'}
+                {isConnecting ? 'Authenticating...' : 'Create Account with FaceID/TouchID'}
               </button>
             )}
             <Link to="/tutorials" className="btn-secondary flex items-center gap-2">

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useLazor, LazorErrorCode } from '../context';
 import type { LazorError } from '../context';
+import { SuccessCelebration } from './SuccessCelebration';
 
 // ============================================================================
 // TYPES
@@ -109,6 +110,9 @@ export function SubscriptionManager() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [isCreatingSubscription, setIsCreatingSubscription] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationTitle, setCelebrationTitle] = useState('');
+  const [celebrationSubtitle, setCelebrationSubtitle] = useState('');
 
   // Determine current step based on state
   useEffect(() => {
@@ -121,10 +125,19 @@ export function SubscriptionManager() {
     }
   }, [isConnected, subscription]);
 
+  // Trigger celebration helper
+  const triggerCelebration = (title: string, subtitle: string) => {
+    setCelebrationTitle(title);
+    setCelebrationSubtitle(subtitle);
+    setShowCelebration(true);
+  };
+
   // Handle wallet creation
   const handleCreateWallet = async () => {
     try {
       await createPasskeyWallet('My Subscription Wallet');
+      // Celebration will be shown after wallet connects via useEffect
+      triggerCelebration('Wallet Created!', 'Your passkey wallet is ready to use');
     } catch (err) {
       // Error is already handled by the context
       console.error('Wallet creation failed:', err);
@@ -148,6 +161,9 @@ export function SubscriptionManager() {
       setSessionKeys(mockSessionKeys);
       setSubscription(mockSubscription);
       setCurrentStep('dashboard');
+      
+      // Show celebration!
+      triggerCelebration('Subscription Active!', 'Your Premium Plan is now active');
     } catch (err) {
       setSubscriptionError('Failed to create subscription. Please try again.');
     } finally {
@@ -215,6 +231,14 @@ export function SubscriptionManager() {
           />
         )}
       </div>
+
+      {/* Success Celebration */}
+      <SuccessCelebration
+        show={showCelebration}
+        title={celebrationTitle}
+        subtitle={celebrationSubtitle}
+        onComplete={() => setShowCelebration(false)}
+      />
     </div>
   );
 }
@@ -302,24 +326,24 @@ function WalletStep({
         <Fingerprint className="w-10 h-10 text-solana-purple" />
       </div>
 
-      <h2 className="text-2xl font-bold mb-3">Create Your Smart Wallet</h2>
+      <h2 className="text-2xl font-bold mb-3">Create Your Account</h2>
       
       <p className="text-gray-400 mb-6">
-        Use your device's biometrics (FaceID, TouchID, or Windows Hello) to create a secure passkey wallet. No seed phrases needed!
+        Just like signing into your banking app. Use FaceID, TouchID, or Windows Hello—no passwords or seed phrases to remember.
       </p>
 
       <div className="space-y-4 mb-8">
         <FeatureItem 
           icon={Shield} 
-          text="Hardware-level security with Secure Enclave" 
+          text="Bank-grade security with your device's Secure Enclave" 
         />
         <FeatureItem 
           icon={Zap} 
-          text="Gasless transactions—we cover the fees" 
+          text="Zero fees—all transactions sponsored" 
         />
         <FeatureItem 
           icon={Key} 
-          text="Session Keys for automatic payments" 
+          text="Set-and-forget automatic payments" 
         />
       </div>
 
@@ -331,18 +355,18 @@ function WalletStep({
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Creating Wallet...
+            Authenticating...
           </>
         ) : (
           <>
             <Fingerprint className="w-5 h-5" />
-            One-Click Wallet Setup
+            Continue with FaceID/TouchID
           </>
         )}
       </button>
 
       <p className="mt-4 text-xs text-gray-500">
-        Your private keys never leave your device
+        Your credentials never leave your device. Works across all your devices via iCloud/Google sync.
       </p>
     </div>
   );
@@ -382,9 +406,14 @@ function SubscriptionStep({
             <span className="text-3xl font-bold">$4.99</span>
             <span className="text-gray-400">USDC / month</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-solana-teal">
+          <div className="flex items-center gap-2 text-sm text-solana-teal mb-3">
             <Zap className="w-4 h-4" />
             <span>Zero gas fees on all transactions</span>
+          </div>
+          {/* Transaction Sponsored Badge */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-solana-teal/10 border border-solana-teal/30 rounded-lg">
+            <div className="w-2 h-2 bg-solana-teal rounded-full animate-pulse" />
+            <span className="text-xs font-medium text-solana-teal">Transaction Sponsored • Fee: $0.00</span>
           </div>
         </div>
 
