@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { type LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 
 interface BentoCardProps {
     title: string;
@@ -12,6 +12,8 @@ interface BentoCardProps {
 }
 
 export function BentoCard({ title, icon: Icon, image, children, className = '', delay = 0 }: BentoCardProps) {
+    const [isLoaded, setIsLoaded] = useState(false);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -35,8 +37,14 @@ export function BentoCard({ title, icon: Icon, image, children, className = '', 
                         </div>
                     )}
                     {image && (
-                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/5 group-hover:border-solana-teal/50 transition-colors duration-300 relative">
-                            <img src={image} alt={title} className="w-full h-full object-cover" />
+                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/5 group-hover:border-solana-teal/50 transition-colors duration-300 relative bg-white/5">
+                            <div className={`absolute inset-0 bg-white/10 animate-pulse transition-opacity duration-500 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
+                            <img
+                                src={image}
+                                alt={title}
+                                className={`w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                                onLoad={() => setIsLoaded(true)}
+                            />
                             <div className="absolute inset-0 bg-solana-purple/10 mix-blend-overlay" />
                         </div>
                     )}
