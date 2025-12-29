@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useWallet } from '@lazorkit/wallet';
 import {
-  Fingerprint,
   Zap,
-  Shield,
   Code,
   BookOpen,
 } from 'lucide-react';
@@ -86,7 +84,7 @@ export function HomePage() {
         <div className="bento-grid">
           <BentoCard
             title="Biometric Authentication"
-            icon={Fingerprint}
+            image="/assets/biometric_auth.png"
             className="col-span-1 md:col-span-2"
             delay={0.4}
           >
@@ -94,15 +92,11 @@ export function HomePage() {
               Replace seed phrases with FaceID, TouchID, and Windows Hello.
               Keys are stored in the device's Secure Enclave, providing bank-grade security.
             </p>
-            <div className="mt-auto h-32 bg-gradient-to-br from-solana-purple/10 to-transparent rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
-              <Fingerprint className="w-16 h-16 text-solana-purple/50" />
-            </div>
           </BentoCard>
 
           <BentoCard
             title="Zero-Gas Experience"
-            icon={Zap}
+            image="/assets/gasless_zap.png"
             delay={0.5}
           >
             <p className="mb-4">
@@ -117,7 +111,7 @@ export function HomePage() {
 
           <BentoCard
             title="Smart Accounts"
-            icon={Shield}
+            image="/assets/smart_account_shield.png"
             delay={0.6}
           >
             <p>
@@ -128,7 +122,7 @@ export function HomePage() {
 
           <BentoCard
             title="Developer Friendly"
-            icon={Code}
+            image="/assets/developer_code.png"
             className="col-span-1 md:col-span-2"
             delay={0.7}
           >

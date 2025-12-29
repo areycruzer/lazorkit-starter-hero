@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { WalletButton } from './WalletButton';
-import { Zap, BookOpen, Home, Code, CreditCard, Menu, X } from 'lucide-react';
+import { BookOpen, Home, Code, CreditCard, Menu, X } from 'lucide-react';
 
 const navLinks = [
   { path: '/', label: 'Home', icon: Home },
@@ -20,8 +20,8 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple to-solana-teal flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Zap className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-teal/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/10 overflow-hidden">
+              <img src="/assets/lazorkit_logo.png" alt="LazorKit" className="w-full h-full object-cover" />
             </div>
             <span className="text-xl font-bold gradient-text">
               LazorKit Starter
