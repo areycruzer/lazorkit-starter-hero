@@ -1,0 +1,3 @@
+export const HELPER_ADDRESSES = {
+    DEVNET_RANDOM: 'G2zmxMfPMcJCUtVv9Uaa81T89Qo4B3K8bM5b6X97zXq'
+};

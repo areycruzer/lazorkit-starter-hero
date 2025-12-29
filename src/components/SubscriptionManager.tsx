@@ -163,6 +163,18 @@ export function SubscriptionManager() {
     }
   };
 
+  const handlePauseToggle = () => {
+    if (!subscription) return;
+    setSubscription(prev => prev ? ({
+      ...prev,
+      status: prev.status === 'active' ? 'paused' : 'active'
+    }) : null);
+    triggerCelebration(
+      subscription.status === 'active' ? 'Subscription Paused' : 'Subscription Resumed',
+      subscription.status === 'active' ? 'No future charges will be made.' : 'Recurring billing is active again.'
+    );
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 pt-28 pb-12">
       {/* Header */}
@@ -302,7 +314,12 @@ export function SubscriptionManager() {
                   <div>
                     <h3 className="text-xl font-bold">{subscription.name}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 rounded-full bg-solana-green/20 text-solana-green text-xs font-semibold">Active</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${subscription.status === 'active'
+                          ? 'bg-solana-green/20 text-solana-green'
+                          : 'bg-yellow-500/20 text-yellow-500'
+                        }`}>
+                        {subscription.status === 'active' ? 'Active' : 'Paused'}
+                      </span>
                       <span className="text-gray-400 text-sm">Next charge: {subscription.nextCharge.toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -314,7 +331,12 @@ export function SubscriptionManager() {
               </div>
 
               <div className="flex gap-4">
-                <button className="btn-secondary flex-1">Pause Subscription</button>
+                <button
+                  onClick={handlePauseToggle}
+                  className="btn-secondary flex-1"
+                >
+                  {subscription.status === 'active' ? 'Pause Subscription' : 'Resume Subscription'}
+                </button>
                 <button onClick={handleCancelSubscription} className="btn-secondary flex-1 hover:border-red-500/50 hover:text-red-400">Cancel</button>
               </div>
             </div>

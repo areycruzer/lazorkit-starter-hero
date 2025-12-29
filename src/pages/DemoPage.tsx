@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useWallet } from '@lazorkit/wallet';
 import { Connection, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import {
@@ -44,6 +44,27 @@ export function DemoPage() {
   const [messageInput, setMessageInput] = useState('Hello LazorKit!');
   const [amountInput, setAmountInput] = useState('0.001');
   const [recipientInput, setRecipientInput] = useState(''); // Empty initially, defaults to self
+
+  const [balance, setBalance] = useState<number | null>(null);
+
+  // Fetch Balance
+  const fetchBalance = useCallback(async () => {
+    if (!smartWalletPubkey) return;
+    try {
+      const connection = new Connection(DEVNET_ENDPOINT, 'confirmed');
+      const bal = await connection.getBalance(smartWalletPubkey);
+      setBalance(bal / LAMPORTS_PER_SOL);
+    } catch (e) {
+      console.error('Failed to fetch balance', e);
+    }
+  }, [smartWalletPubkey]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchBalance();
+    const interval = setInterval(fetchBalance, 10000); // Refresh every 10s
+    return () => clearInterval(interval);
+  }, [fetchBalance]);
 
   // Helper to add logs
   const addLog = useCallback((type: 'info' | 'success' | 'error', message: string, data?: any) => {
@@ -237,6 +258,30 @@ export function DemoPage() {
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Actions Column */}
         <div className="space-y-6">
+          {/* Wallet Balance Card */}
+          {isConnected && (
+            <div className="glass-card rounded-2xl p-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-solana-blue/20 rounded-xl text-solana-blue border border-solana-blue/20">
+                  <Wallet className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400">Wallet Balance</h3>
+                  <p className="text-2xl font-bold font-mono">
+                    {balance !== null ? balance.toFixed(4) : '---'} <span className="text-sm text-gray-500">SOL</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={fetchBalance}
+                className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                title="Refresh Balance"
+              >
+                <ArrowRight className="w-4 h-4 text-gray-400 rotate-[-45deg]" />
+              </button>
+            </div>
+          )}
+
           {/* Sign Message Card */}
           <div className="glass-card rounded-2xl p-8 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-50">
@@ -330,6 +375,21 @@ export function DemoPage() {
                     maxLength={44}
                     className="w-full bg-transparent border-none text-gray-300 font-mono text-xs focus:ring-0 p-0 placeholder:text-gray-600"
                   />
+                </div>
+                {/* Quick Fill Helpers */}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => setRecipientInput(smartWalletPubkey?.toBase58() || '')}
+                    className="text-[10px] bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-gray-400 transition-colors"
+                  >
+                    Fill My Address
+                  </button>
+                  <button
+                    onClick={() => setRecipientInput('G2zmxMfPMcJCUtVv9Uaa81T89Qo4B3K8bM5b6X97zXq')}
+                    className="text-[10px] bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded text-gray-400 transition-colors"
+                  >
+                    Random Devnet Address
+                  </button>
                 </div>
               </div>
             </div>
@@ -432,6 +492,6 @@ export function DemoPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
