@@ -16,7 +16,20 @@ A production-ready starter template for building passkey-native Solana applicati
 
 ---
 
-## 📱 Web App Features
+## �️ Screenshots
+
+### Smart Wallet Playground
+<img src="/public/unnamed.jpg" alt="Smart Wallet UI" width="100%" />
+
+### Successful Transaction on Devnet
+<img src="/public/43.jpg" alt="Transaction Success" width="100%" />
+
+### Debug Console & Transaction Details
+<img src="/public/222.jpg" alt="Debug Console" width="100%" />
+
+---
+
+## �📱 Web App Features
 
 | Feature | Description |
 |---------|-------------|
