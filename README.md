@@ -11,7 +11,7 @@ A production-ready starter template for building passkey-native Solana applicati
 
 ## 🎯 Live Demo
 
-**👉 [View Live Demo](https://lazorkit-starter-hero.vercel.app)** *(Replace with your deployed URL)*
+**👉 [View Live Demo](https://lazorkit-starter-hero.vercel.app)**
 
 ---
 
