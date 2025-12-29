@@ -38,39 +38,53 @@ interface Subscription {
 
 type Step = 'wallet' | 'subscription' | 'dashboard';
 
-const mockSessionKeys: SessionKey[] = [
-  {
-    id: 'sk_001',
-    name: 'USDC Subscription',
-    permissions: ['transfer:usdc', 'max:5'],
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    usageCount: 3,
-    maxUsage: null,
-    isActive: true,
-  },
-];
 
-const mockSubscription: Subscription = {
-  id: 'sub_001',
-  name: 'Premium Plan',
-  amount: 4.99,
-  currency: 'USDC',
-  interval: 'monthly',
-  nextCharge: new Date(Date.now() + 23 * 24 * 60 * 60 * 1000),
-  sessionKeyId: 'sk_001',
-  status: 'active',
-};
 
 export function SubscriptionManager() {
-  const { isConnected, connect, isConnecting } = useWallet();
+  const { isConnected, connect, isConnecting, signMessage } = useWallet();
 
   const [currentStep, setCurrentStep] = useState<Step>('wallet');
-  const [sessionKeys, setSessionKeys] = useState<SessionKey[]>([]);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+
+  // Persistent State: Session Keys
+  const [sessionKeys, setSessionKeys] = useState<SessionKey[]>(() => {
+    try {
+      const saved = localStorage.getItem('lazorkit_session_keys');
+      return saved ? JSON.parse(saved, (key, value) => {
+        if (key === 'expiresAt') return new Date(value);
+        return value;
+      }) : [];
+    } catch (e) { return []; }
+  });
+
+  // Persistent State: Subscription
+  const [subscription, setSubscription] = useState<Subscription | null>(() => {
+    try {
+      const saved = localStorage.getItem('lazorkit_subscription');
+      if (!saved) return null;
+      const parsed = JSON.parse(saved);
+      // Rehydrate Date objects
+      parsed.nextCharge = new Date(parsed.nextCharge);
+      return parsed;
+    } catch (e) { return null; }
+  });
+
   const [isCreatingSubscription, setIsCreatingSubscription] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationTitle, setCelebrationTitle] = useState('');
   const [celebrationSubtitle, setCelebrationSubtitle] = useState('');
+
+  // Sync to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('lazorkit_session_keys', JSON.stringify(sessionKeys));
+  }, [sessionKeys]);
+
+  useEffect(() => {
+    if (subscription) {
+      localStorage.setItem('lazorkit_subscription', JSON.stringify(subscription));
+    } else {
+      localStorage.removeItem('lazorkit_subscription');
+    }
+  }, [subscription]);
 
   // Determine current step based on state
   useEffect(() => {
@@ -96,22 +110,57 @@ export function SubscriptionManager() {
   };
 
   const handleCreateSubscription = async () => {
+    if (!isConnected) return;
     setIsCreatingSubscription(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setSessionKeys(mockSessionKeys);
-      setSubscription(mockSubscription);
-      setCurrentStep('dashboard');
+      // 1. Request Signature for Auth
+      const message = `Approve Subscription: Premium Plan (4.99 USDC/mo)\nTimestamp: ${Date.now()}\nNonce: ${Math.random().toString(36).substring(7)}`;
+
+      const { signature } = await signMessage(message);
+
+      if (!signature) throw new Error('Signature failed');
+
+      // 2. Create Real Data Objects
+      await new Promise(resolve => setTimeout(resolve, 800)); // Slight UX delay for smoothness
+
+      const newKey: SessionKey = {
+        id: `sk_${Math.random().toString(36).substr(2, 9)}`,
+        name: 'USDC Subscription Key',
+        permissions: ['transfer:usdc', 'max:5'],
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        usageCount: 0,
+        maxUsage: null,
+        isActive: true,
+      };
+
+      const newSub: Subscription = {
+        id: `sub_${Math.random().toString(36).substr(2, 9)}`,
+        name: 'Premium Plan',
+        amount: 4.99,
+        currency: 'USDC',
+        interval: 'monthly',
+        nextCharge: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        sessionKeyId: newKey.id,
+        status: 'active',
+      };
+
+      setSessionKeys([newKey]);
+      setSubscription(newSub);
+
       triggerCelebration('Subscription Active!', 'Recurring payments enabled via Session Key.');
+    } catch (error) {
+      console.error('Subscription failed:', error);
     } finally {
       setIsCreatingSubscription(false);
     }
   };
 
   const handleCancelSubscription = () => {
-    setSubscription(null);
-    setSessionKeys([]);
-    setCurrentStep('subscription');
+    if (confirm('Are you sure you want to cancel your subscription?')) {
+      setSubscription(null);
+      setSessionKeys([]);
+      setCurrentStep('subscription');
+    }
   };
 
   return (

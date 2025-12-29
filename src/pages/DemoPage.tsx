@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useWallet } from '@lazorkit/wallet';
+import { Connection, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import {
   Terminal,
   Send,
@@ -7,7 +8,8 @@ import {
   Zap,
   Loader2,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Wallet
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
@@ -21,10 +23,14 @@ interface DebugLogEntry {
   data?: any;
 }
 
+const DEVNET_ENDPOINT = 'https://api.devnet.solana.com';
+
 export function DemoPage() {
   const {
     isConnected,
     signMessage,
+    signAndSendTransaction,
+    smartWalletPubkey
   } = useWallet();
 
   // State
@@ -32,6 +38,11 @@ export function DemoPage() {
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [debugMode, setDebugMode] = useState(false);
   const [lastSignature, setLastSignature] = useState<string | null>(null);
+
+  // Inputs
+  const [messageInput, setMessageInput] = useState('Hello LazorKit!');
+  const [amountInput, setAmountInput] = useState('0.001');
+  const [recipientInput, setRecipientInput] = useState(''); // Empty initially, defaults to self
 
   // Helper to add logs
   const addLog = useCallback((type: 'info' | 'success' | 'error', message: string, data?: any) => {
@@ -53,51 +64,88 @@ export function DemoPage() {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#9945FF', '#14F195', '#00D1FF']
+      colors: ['#9945FF', '#14F195', '#007AFF']
     });
   };
 
   // Actions
   const handleSignMessage = async () => {
+    if (!isConnected) {
+      addLog('error', 'Wallet not connected');
+      return;
+    }
+
     try {
       setLoadingAction('sign');
-      addLog('info', 'Initiating message signature...', { message: 'Hello LazorKit!' });
+      addLog('info', 'Initiating message signature...', { message: messageInput });
 
-      const signature = await signMessage('Hello LazorKit!');
+      const result = await signMessage(messageInput);
 
-      addLog('success', 'Message signed successfully', { signature });
-      // Depending on wallet adapter, signature might be string or object. 
-      // Assuming object based on verification error, handling safely
-      const sigString = typeof signature === 'string' ? signature : (signature as any).signature || JSON.stringify(signature);
-      setLastSignature(sigString);
+      addLog('success', 'Message signed successfully', { signature: result.signature });
+
+      setLastSignature(result.signature);
       triggerSuccess();
     } catch (error: any) {
       console.error(error);
-      addLog('error', 'Failed to sign message', { error: error.message });
+      addLog('error', 'Failed to sign message', { error: error.message || 'Unknown error' });
     } finally {
       setLoadingAction(null);
     }
   };
 
   const handleSendTransaction = async () => {
+    if (!isConnected || !smartWalletPubkey) {
+      addLog('error', 'Wallet not connected');
+      return;
+    }
+
     try {
       setLoadingAction('tx');
-      addLog('info', 'Constructing gasless transaction...');
 
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const recipientKey = recipientInput
+        ? new PublicKey(recipientInput)
+        : smartWalletPubkey;
 
-      const mockSignature = '5K...mock-signature...111';
-
-      addLog('success', 'Transaction sponsored & sent', {
-        signature: mockSignature,
-        gasFees: 'Sponsored (0 SOL)'
+      addLog('info', 'Preparing transaction...', {
+        amount: `${amountInput} SOL`,
+        recipient: recipientInput ? 'External Address' : 'Self (Demo)',
+        address: recipientKey.toBase58()
       });
-      setLastSignature(mockSignature);
+
+      // Construct instruction
+      const instruction = SystemProgram.transfer({
+        fromPubkey: smartWalletPubkey,
+        toPubkey: recipientKey,
+        lamports: Math.floor(parseFloat(amountInput) * LAMPORTS_PER_SOL),
+      });
+
+      addLog('info', 'Requesting wallet signature...');
+
+      // Use LazorKit's simplified send hook which handles blockhash/signing/sending
+      const signature = await signAndSendTransaction({
+        instructions: [instruction],
+        // options can be used for compute units etc.
+      });
+
+      addLog('success', 'Transaction sent!', {
+        signature,
+        explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`
+      });
+
+      setLastSignature(signature);
       triggerSuccess();
+
+      // Optional: Confirm logic
+      if (signature) {
+        addLog('info', 'Confirming transaction...');
+        const connection = new Connection(DEVNET_ENDPOINT, 'confirmed');
+        await connection.confirmTransaction(signature, 'confirmed');
+        addLog('success', 'Transaction confirmed on-chain');
+      }
+
     } catch (error: any) {
       console.error(error);
-      addLog('error', 'Transaction failed', { error: error.message });
+      addLog('error', 'Transaction failed', { error: error.message || 'Unknown error' });
     } finally {
       setLoadingAction(null);
     }
@@ -110,7 +158,7 @@ export function DemoPage() {
         <div>
           <Badge label="Interactive Demo" variant="solana" />
           <h1 className="text-4xl font-bold mt-4">Smart Wallet Playground</h1>
-          <p className="text-gray-400 mt-2">Test gasless transactions and signatures in real-time.</p>
+          <p className="text-gray-400 mt-2">Test real transactions and signatures on Solana Devnet.</p>
         </div>
 
         <div className="flex items-center gap-3 bg-dark-800 p-2 rounded-xl border border-dark-600">
@@ -149,14 +197,20 @@ export function DemoPage() {
               </div>
             </div>
 
-            <div className="bg-dark-900/50 rounded-xl p-4 mb-6 border border-white/5 font-mono text-sm text-gray-300">
-              "Hello LazorKit!"
+            <div className="bg-dark-900/50 rounded-xl p-4 mb-6 border border-white/5">
+              <label className="text-xs text-gray-500 font-mono mb-2 block">Message to Sign</label>
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                className="w-full bg-transparent border-none text-gray-300 font-mono text-sm focus:ring-0 p-0"
+              />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs text-solana-green bg-solana-green/10 px-3 py-1 rounded-full border border-solana-green/20">
                 <Zap className="w-3 h-3" />
-                Gasless
+                Zero Cost
               </div>
 
               <button
@@ -188,18 +242,40 @@ export function DemoPage() {
               </div>
               <div>
                 <h3 className="text-xl font-bold">Send Transaction</h3>
-                <p className="text-gray-400 text-sm">Sponsored logic execution</p>
+                <p className="text-gray-400 text-sm">Real Devnet SOL Transfer</p>
               </div>
             </div>
 
-            <div className="bg-dark-900/50 rounded-xl p-4 mb-6 border border-white/5 font-mono text-sm text-gray-300">
-              Transfer 0.0 SOL (Simulated)
+            <div className="bg-dark-900/50 rounded-xl p-4 mb-6 border border-white/5 space-y-4">
+              <div>
+                <label className="text-xs text-gray-500 font-mono mb-1 block">Amount (SOL)</label>
+                <input
+                  type="number"
+                  value={amountInput}
+                  onChange={(e) => setAmountInput(e.target.value)}
+                  step="0.001"
+                  className="w-full bg-transparent border-none text-gray-300 font-mono text-sm focus:ring-0 p-0"
+                />
+              </div>
+              <div className="pt-2 border-t border-white/5">
+                <label className="text-xs text-gray-500 font-mono mb-1 block">Recipient</label>
+                <div className="flex items-center gap-2 bg-transparent text-gray-300 w-full">
+                  <Wallet className="w-3 h-3 text-gray-500 shrink-0" />
+                  <input
+                    type="text"
+                    value={recipientInput}
+                    onChange={(e) => setRecipientInput(e.target.value)}
+                    placeholder={isConnected ? "Self (Leave empty)" : "Connect Wallet"}
+                    className="w-full bg-transparent border-none text-gray-300 font-mono text-xs focus:ring-0 p-0 placeholder:text-gray-600"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs text-solana-green bg-solana-green/10 px-3 py-1 rounded-full border border-solana-green/20">
                 <Zap className="w-3 h-3" />
-                Sponsored: $0.00
+                Devnet Chain
               </div>
 
               <button
@@ -229,8 +305,8 @@ export function DemoPage() {
               <CheckCircle2 className="w-5 h-5 text-solana-green mt-0.5" />
               <div>
                 <h4 className="font-semibold text-white">Action Completed</h4>
-                <p className="text-gray-400 text-sm">
-                  {debugMode ? "Check the Debug Console for cryptographic proofs." : "Enable Debug Mode to inspect the blockchain interactions."}
+                <p className="text-gray-400 text-sm break-all">
+                  Hash: {lastSignature.slice(0, 20)}...
                 </p>
               </div>
             </motion.div>
@@ -240,7 +316,7 @@ export function DemoPage() {
         {/* Debug Console Column */}
         <div className={`
           flex flex-col h-[600px] glass-panel rounded-2xl overflow-hidden
-          ${!debugMode ? 'opacity-50 grayscale pointer-events-none' : ''}
+          ${!debugMode ? '' : ''} 
           transition-all duration-500
         `}>
           <div className="flex items-center justify-between p-4 border-b border-white/10 bg-dark-800/80">
@@ -261,7 +337,7 @@ export function DemoPage() {
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
                 <Terminal className="w-12 h-12 mb-4 opacity-20" />
                 <div className="mb-2">Waiting for interactions...</div>
-                {!debugMode && <div className="text-xs text-solana-green">Enable Debug Mode to inspect logs</div>}
+                {!debugMode && <div className="text-xs text-solana-green">Enable Debug Mode to see details</div>}
               </div>
             ) : (
               debugLogs.map((log, i) => (

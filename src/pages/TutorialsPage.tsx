@@ -237,6 +237,18 @@ export function TutorialsPage() {
           </div>
         </div>
       </div>
+
+      {/* CTA */}
+      <div className="mt-20 text-center">
+        <h2 className="text-2xl font-bold mb-4">Ready to Build?</h2>
+        <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+          See these concepts in action. Try our interactive playground to send real transactions on Devnet.
+        </p>
+        <Link to="/demo" className="btn-primary inline-flex items-center gap-2">
+          <Zap className="w-5 h-5" />
+          Try Interactive Demo
+        </Link>
+      </div>
     </div>
   );
 }
