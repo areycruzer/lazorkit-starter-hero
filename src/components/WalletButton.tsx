@@ -89,9 +89,25 @@ export function WalletButton() {
 
                 <div className="space-y-3">
                   <button
-                    onClick={() => {
-                      setShowWelcome(false);
-                      connect();
+                    onClick={async () => {
+                      try {
+                        setShowWelcome(false);
+                        await connect();
+                      } catch (error: any) {
+                        console.error('Connection failed:', error);
+
+                        // Handle common WebAuthn errors
+                        if (error.name === 'NotAllowedError' || error.message?.includes('not allowed')) {
+                          alert("Passkey access denied. \n\nIf you're on Brave:\n1. Check the 'Lion' shield icon in URL bar\n2. Allow 'Device Recognition'\n3. Or try Chrome/Safari.");
+                        } else if (error.name === 'SecurityError') {
+                          alert("Security Error: Passkeys require HTTPS or localhost.");
+                        } else {
+                          alert(`Connection failed: ${error.message}`);
+                        }
+
+                        // Re-open welcome to let them try again
+                        setShowWelcome(true);
+                      }
                     }}
                     className="w-full btn-primary justify-center py-3"
                   >
