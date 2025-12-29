@@ -115,7 +115,7 @@ export function SubscriptionManager() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
+    <div className="max-w-5xl mx-auto px-4 pt-28 pb-12">
       {/* Header */}
       <div className="text-center mb-16">
         <Badge label="Gasless Subscriptions" variant="solana" />

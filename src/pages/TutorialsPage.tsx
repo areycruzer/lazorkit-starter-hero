@@ -98,7 +98,7 @@ export function TutorialsPage() {
   const regularTutorials = tutorials.filter(t => !t.featured);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-solana-purple to-solana-teal flex items-center justify-center">

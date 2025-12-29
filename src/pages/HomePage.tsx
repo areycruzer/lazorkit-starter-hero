@@ -24,7 +24,7 @@ export function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-solana-purple/20 to-transparent blur-3xl" />
       </div>
 
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 lg:pb-24">
         {/* Header Content */}
         <div className="text-center max-w-4xl mx-auto mb-20">
           <motion.div
