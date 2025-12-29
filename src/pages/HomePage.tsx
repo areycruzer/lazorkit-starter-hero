@@ -143,6 +143,63 @@ export function HomePage() {
             />
           </BentoCard>
         </div>
+
+        {/* Quick Reference Section */}
+        <div className="mt-24">
+          <h2 className="text-2xl font-bold mb-12">Quick Reference</h2>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-solana-purple">
+                <Code className="w-5 h-5" />
+                <h3 className="font-medium text-white">Provider Setup</h3>
+              </div>
+              <CodeWindow
+                title="src/App.tsx"
+                language="tsx"
+                code={`import { LazorkitProvider } from '@lazorkit/wallet';
+
+function App() {
+  return (
+    <LazorkitProvider
+      rpcUrl="https://api.devnet.solana.com"
+      portalUrl="https://portal.lazor.sh"
+      paymasterConfig={{
+        paymasterUrl: "https://kora.devnet.lazorkit.com"
+      }}
+    >
+      <YourApp />
+    </LazorkitProvider>
+  );
+}`}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-solana-purple">
+                <Code className="w-5 h-5" />
+                <h3 className="font-medium text-white">useWallet Hook</h3>
+              </div>
+              <CodeWindow
+                title="src/components/ConnectWallet.tsx"
+                language="tsx"
+                code={`import { useWallet } from '@lazorkit/wallet';
+
+function WalletComponent() {
+  const {
+    connect,
+    disconnect,
+    isConnected,
+    smartWalletPubkey,
+    signMessage,
+    signAndSendTransaction,
+  } = useWallet();
+
+  // Your wallet logic here
+}`}
+              />
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
