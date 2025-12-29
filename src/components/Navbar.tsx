@@ -15,7 +15,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="glass sticky top-0 z-50 border-b border-dark-600/50">
+    <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-dark-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-dark-900/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

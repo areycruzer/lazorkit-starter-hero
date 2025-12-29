@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -11,10 +10,10 @@ import {
   Shield,
   Send,
   Fingerprint,
-  Sparkles,
-  Copy,
-  CheckCircle
+  Sparkles
 } from 'lucide-react';
+import { CodeWindow } from '../components/ui/CodeWindow';
+import { SNIPPETS } from '../data/snippets';
 
 interface Tutorial {
   id: string;
@@ -92,37 +91,7 @@ const difficultyColors: Record<string, string> = {
   Advanced: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
-// Code Block Component with Copy
-function CodeBlock({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="relative group">
-      <div className="code-block overflow-hidden">
-        <pre className="text-sm text-gray-300">
-          <code>{code}</code>
-        </pre>
-      </div>
-      <button
-        onClick={handleCopy}
-        className="absolute top-2 right-2 p-2 rounded-lg bg-dark-700/50 text-gray-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-dark-600 hover:text-white"
-        title="Copy code"
-      >
-        {copied ? (
-          <CheckCircle className="w-4 h-4 text-solana-teal" />
-        ) : (
-          <Copy className="w-4 h-4" />
-        )}
-      </button>
-    </div>
-  );
-}
 
 export function TutorialsPage() {
   const featuredTutorials = tutorials.filter(t => t.featured);
@@ -156,43 +125,35 @@ export function TutorialsPage() {
               <Link
                 key={tutorial.id}
                 to={`/tutorials/${tutorial.id}`}
-                className="card group block relative overflow-hidden border-2 border-solana-purple/30 hover:border-solana-purple/60"
+                className="glass-card p-6 rounded-2xl group block relative overflow-hidden transition-transform duration-300 hover:-translate-y-1"
               >
-                <div className="absolute top-0 right-0 px-3 py-1 bg-gradient-to-r from-solana-purple to-solana-teal text-xs font-semibold text-white rounded-bl-lg">
+                {/* Featured Badge */}
+                <div className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-solana-purple/20 border border-solana-purple/30 text-xs font-semibold text-solana-purple">
                   Featured
                 </div>
+
                 <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-solana-purple/30 to-solana-teal/30 border border-solana-purple/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <tutorial.icon className="w-7 h-7 text-solana-teal" />
+                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <tutorial.icon className="w-6 h-6 text-solana-teal" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${difficultyColors[tutorial.difficulty]}`}>
+                  <div className="flex-1 pr-16"> {/* Padding for badge */}
+                    <h3 className="text-lg font-bold mb-2 text-white group-hover:text-solana-teal transition-colors">
+                      {tutorial.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                      {tutorial.description}
+                    </p>
+
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <span className={`px-2 py-0.5 font-medium rounded-full border ${difficultyColors[tutorial.difficulty]}`}>
                         {tutorial.difficulty}
                       </span>
-                      <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {tutorial.time}
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 group-hover:text-solana-teal transition-colors">
-                      {tutorial.title}
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      {tutorial.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {tutorial.topics.map((topic, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 text-xs bg-dark-700 rounded-lg text-gray-300"
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-solana-teal group-hover:translate-x-1 transition-all duration-300" />
                 </div>
               </Link>
             ))}
@@ -251,50 +212,27 @@ export function TutorialsPage() {
         <h2 className="text-2xl font-bold mb-8">Quick Reference</h2>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          <div className="card">
+          <div className="glass-card p-6 rounded-2xl">
             <div className="flex items-center gap-3 mb-4">
               <Code className="w-6 h-6 text-solana-purple" />
-              <h3 className="text-lg font-semibold">Provider Setup</h3>
+              <h3 className="text-lg font-semibold text-white">Provider Setup</h3>
             </div>
-            <CodeBlock
-              code={`import { LazorkitProvider } from '@lazorkit/wallet';
-
-function App() {
-  return (
-    <LazorkitProvider
-      rpcUrl="https://api.devnet.solana.com"
-      portalUrl="https://portal.lazor.sh"
-      paymasterConfig={{
-        paymasterUrl: "https://kora.devnet.lazorkit.com"
-      }}
-    >
-      <YourApp />
-    </LazorkitProvider>
-  );
-}`}
+            <CodeWindow
+              title="src/App.tsx"
+              language="tsx"
+              code={SNIPPETS.PROVIDER_SETUP}
             />
           </div>
 
-          <div className="card">
+          <div className="glass-card p-6 rounded-2xl">
             <div className="flex items-center gap-3 mb-4">
               <Code className="w-6 h-6 text-solana-teal" />
-              <h3 className="text-lg font-semibold">useWallet Hook</h3>
+              <h3 className="text-lg font-semibold text-white">useWallet Hook</h3>
             </div>
-            <CodeBlock
-              code={`import { useWallet } from '@lazorkit/wallet';
-
-function WalletComponent() {
-  const {
-    connect,
-    disconnect,
-    isConnected,
-    smartWalletPubkey,
-    signMessage,
-    signAndSendTransaction,
-  } = useWallet();
-  
-  // Your wallet logic here
-}`}
+            <CodeWindow
+              title="src/components/ConnectWallet.tsx"
+              language="tsx"
+              code={SNIPPETS.USE_WALLET}
             />
           </div>
         </div>
