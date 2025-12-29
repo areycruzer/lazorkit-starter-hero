@@ -13,6 +13,16 @@ A production-ready starter template for building passkey-native Solana applicati
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="/public/unnamed.jpg" alt="Smart Wallet UI" width="32%" />
+  <img src="/public/43.jpg" alt="Transaction Success" width="32%" />
+  <img src="/public/222.jpg" alt="Debug Console" width="32%" />
+</p>
+
+---
+
 ## 🎯 Features
 
 | Feature | Description |
@@ -20,7 +30,6 @@ A production-ready starter template for building passkey-native Solana applicati
 | **🔐 Biometric Auth** | Create wallets with FaceID, TouchID, or Windows Hello. No extensions required. |
 | **⛽ Gasless Transactions** | Built-in Paymaster support. Users pay $0 SOL for gas. |
 | **🛡️ Smart Accounts** | Programmable wallets with session keys, spending limits, and social recovery. |
-| **🎨 Nano Banana Design** | Ultra-premium UI with glassmorphism, "Deep Space" gradients, and 3D assets. |
 | **📱 Mobile First** | Fully responsive layout optimized for mobile browsers and PWA installation. |
 
 ---
